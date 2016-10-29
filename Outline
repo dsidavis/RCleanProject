@@ -1,0 +1,114 @@
+The premise is simple.
+As a project evolves, we write code in different files to do different
+things.  At some point in time, (e.g., the end of the project), we want to 
+tidy up the code and keep only the parts that are actually used.
+In other words, we want to find all the functions that are not called
+by any of the code. Ideally, we also want to identify any top-level
+commands whose results are not used (or have no side effects).
+
+Matt's setup is a combination of data files, R code,
+Stan code and shell scripts which run the Stan code.
+The pipeline is implicitly
+  Run a sequence of R scripts that process the current steps data files and 
+      generate new data files as rda files.
+  Output the data in a form Stan can process
+  Run Stan model via shell scripts and output CSV files
+  Read CSV files back into R & process
+  Generate results.
+
+The shell scripts are run manually!!!!
+
+
+So we turn this into a programmatic pipeline.
+Make is a reasonable option here.
+It will allow us to restart at different points when
+we change code, etc. but avoid running the earlier code (i.e., redoing the computations for an earlier step)
+if the input files (data and code) for that step haven't changed.
+
+
+step1.rda: step1.R  orig.csv  funs1.R 
+	R < step1.R
+
+step2.rda: step2.R  step1.rda  funs1.R funs2.R
+	R < step2.R
+  
+...
+
+StanOutput/a.csv: stan1.hpp  shellScript1 step2.outputData
+       shellScript1
+
+StanOutput/b.csv: stan2.hpp  shellScript2 step4.outputData
+       shellScript2
+
+
+
+
+How do we find R functions that are not called anywhere.
+
+First, let's find all the functions.
+If we know the files that have function definitions in them, we can source
+these.  If some have functions and other R expressions, then these may fail
+or they may run all the code.  We can handle both situations, but we'll start with
+the first which is simpler.
+Suppose all the R files that end with funs.R are the ones that contain function
+definitions.
+We'll source these but have the functions collected in a separate enviroment
+rather than global work space:
+```
+ff = list.files(pattern = "funs\\.R$")
+e = new.env()
+invisible(lappy(ff, source, e))
+```
+Let's look at the collection of objects:
+```
+ls(e, all = TRUE)
+```
+Now let's get these into a list:
+```
+funs = lapply(ls(e, all = TRUE), get, e)
+names(funs) = ls(e, all = TRUE)
+```
+Are all of these functions?
+Some are not but literals/constants. So let's filter:
+```
+funs = funs[sapply(funs, is.function)]
+```
+
+Now, for each of these functions, let's find what functions it calls.
+```
+library(codetools)
+g = lapply(funs, findGlobals, FALSE)
+```
+This gives us the functions called and the global variables.
+
+```
+called = table(unlist(lapply(g, `[[`, "functions")))
+```
+
+```
+setdiff(names(funs), names(called))
+```
+
+```
+g = lapply(funs, findGlobals)
+called = table(unlist(g))
+setdiff(names(funs), names(called))
+```
+
+
+
+
+
+
+Other Applications
+
+Static Code-coverage of a kind
+
+Identifying unused functions
+  If a function in a package is never called by another and is not exported, we can identify these.
+
+Tree Shaking
+  We want to take a large collection of code and identify all functions that are actually used from a particular entry point
+  and discard the rest. This reduces the size of the code.  We are interested in this to create stand-alone applications,
+  compile minimal subsets of code, etc.
+

@@ -1,0 +1,6 @@
+codetools doesn't descend in to local function definitions in, e.g.,
+  lapply(obj, function(x)  {
+                  a = foo(x)
+                  b = bar(a, x)
+               })
+So we don't pick up uses there.
