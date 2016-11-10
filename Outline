@@ -40,8 +40,18 @@ StanOutput/a.csv: stan1.hpp  shellScript1 step2.outputData
 StanOutput/b.csv: stan2.hpp  shellScript2 step4.outputData
        shellScript2
 
+--------------
+##As a first step (before cleaning individual functions)
 
+Read all files, and create a network of:
+  + Inputs: (source, read.csv, read_excel, load)
+  + Outputs: (save, write.csv, stan_rdump, pdf)
+  
+Identify orphan files that are not being used in the main "chain" of the analysis, maybe by tracing backwards from the final step. 
 
+Once we have a clean set of files, then step 2: programatically read the code to identify functions and calls that are no longer used.
+
+-----------------
 
 How do we find R functions that are not called anywhere.
 
@@ -111,4 +121,10 @@ Tree Shaking
   We want to take a large collection of code and identify all functions that are actually used from a particular entry point
   and discard the rest. This reduces the size of the code.  We are interested in this to create stand-alone applications,
   compile minimal subsets of code, etc.
+  
+--------
+Matt's questions:
+  + what do we do with code for testing - it is not connected to the final branch of the analysis, but we need to keep it. What is the best way to handle this?
+  + Best practices for doing with Git. Do we fork? 
+  + Interactive sections of code - in some places, I create a plot in the R window, rather than saving it (typically to check for strange stuff). What do we do with pieces of code that do not result in an output "object"?
 
