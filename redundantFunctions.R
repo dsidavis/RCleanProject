@@ -9,8 +9,6 @@
 # Similarly, if this is code in a package, the uncalled
 # functions may be the top-level user-callable functions.
 
-library(codetools)
-
 dir = "Variety_trial_analysis/code"
 rfiles = list.files(dir, pattern = "\\.R$", full = TRUE)
 
@@ -23,8 +21,10 @@ invisible(sapply(rfunfiles, source, e))
 funs = lapply(ls(e, all = TRUE), get, e)
 names(funs) = ls(e, all = TRUE)
 funs = funs[sapply(funs, is.function)]
+
+library(codetools)
 g = lapply(funs, findGlobals, FALSE)
 
 called = table(unlist(lapply(g, `[[`, "functions")))
 
-setdiff(names(funs), names(called))
+notCalled = setdiff(names(funs), names(called))
