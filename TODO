@@ -1,4 +1,9 @@
+Get rid of lists in the data frames.
+  Seem to be all related to stan and packages we haven't loaded.
+
 Find orphan files
+
+Evaluate library() calls.
 
 Deal with variables in calls to read.csv(), etc. i.e. where the name of the file is in a variable.
 
@@ -6,6 +11,11 @@ Looping over a vector of file names and calling ...
   lapply(files, read.csv)
   for(f in files)
      read.csv(f)
+
+
+
+
+Partially done:
 
 Nested calls
   See
@@ -16,7 +26,14 @@ Nested calls
 2  bar.csv  read.csv             2
 
 
+[fixed] if() with else with multiple expressions within { }
+  Preserve the subexpression numbers as a hierarchy
+
 Top-level if() statements
   find constant and exclude if FALSE
   Allow for constant that could be redefined.
   Dynamic value.
+
+  filename operation expressionNum
+1 foo2.csv  read.csv             2
+2  bar.csv  read.csv             4

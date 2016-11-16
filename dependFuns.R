@@ -47,8 +47,8 @@ function(code, fileFunctionNames = FileFunctionNames(), prev = list())
 getDepend =
 function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functions), prev = list())
 {
-
-   if(length(node@strings) && any(fileFunctionNames %in% funs)) {
+browser()
+   if(any(fileFunctionNames %in% funs)) {   # length(node@strings) && 
           # what about sep = "\t"
 
       funs = intersect(fileFunctionNames, names(node@functions))
@@ -84,6 +84,19 @@ function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functi
           file = kall[[arg]]
       } else {
           file = k[[2]]
+      }
+
+# If the argument is not a string but a call or the name of a variable.      
+      if(!is.character(file)) {
+         if(is.name(file)) {
+            browser()
+           v = getVariableDepends(as.character(file), lapply(prev, slot, "code"), prev)
+           if(length(v)) {
+               
+           }
+         } else
+           file = as.character(NA)
+         
       }
 
       

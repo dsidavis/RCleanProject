@@ -36,7 +36,11 @@ all.libs = table(unlist(lapply(info, getLibraries)))
 tmp = lapply(info, function(x) getDepends(, x, FileFunctionNames("stan_rdump", "read_stan_csv", "read_vt", "read_vt_sheet")))
 all.dep = do.call(rbind, tmp)
 all.dep$SourceFilename = rep(names(info), sapply(tmp, nrow))
-#rownames(all.dep) = seq(1, nrow(all.dep))
+rownames(all.dep) = NULL # seq(1, nrow(all.dep))
+
+all.dep$operation = unname(all.dep$operation)
 
 
 # Find orphans
+
+
