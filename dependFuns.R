@@ -8,7 +8,8 @@ function(file, info = as(readScript(file), "ScriptInfo"), fileFunctionNames = Fi
       return(data.frame(filename = character(), operation = character(), expressionNum = integer(), stringsAsFactors = FALSE))
   
   ans = as.data.frame(do.call(rbind, tmp[i]), stringsAsFactors = FALSE)
-  ans$expressionNum = which(i)
+    # We are losing the expression number within the sub-expressions
+  ans$expressionNum = rep(which(i), sapply(tmp[i], function(x) if(is.data.frame(x)) nrow(x) else 1))
   ans
 }
 
@@ -31,6 +32,15 @@ function(..., .funs = unlist(list(...)), .exclude = FALSE)
       c(DefaultFileFunctions, .funs)
 }
 
+
+getDependsLanguage =
+function(code, fileFunctionNames = FileFunctionNames())
+{
+    i = new("ScriptInfo", lapply(code, getInputs))
+    tmp = getDepends(, i, fileFunctionNames)         
+    tmp
+}
+
 getDepend =
 function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functions))
 {
@@ -41,20 +51,20 @@ function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functi
       funs = intersect(fileFunctionNames, names(node@functions))
       k = node@code
       if(class(k) == "if") {
-         if(is.logical(k[[2]]) && !k[[2]])  #XXX Allow caller to specify this should be processed.
+         if(is.logical(k[[2]]) && !k[[2]]) {  #XXX Allow caller to specify this should be processed.
+            if(length(k) == 4)
+                return(getDependsLanguage(k[[4]], fileFunctionNames))
+                       
             return(NULL)
+         }
 
-         i = new("ScriptInfo", lapply(k[[3]], function(x) getInputs(x)))
-         tmp = getDepends(, i, fileFunctionNames)         
-         return(tmp)
-#         return(getDepends(, as(k[[3]], "ScriptInfo"), fileFunctionNames = fileFunctionNames))
+         return(getDependsLanguage(k[[3]], fileFunctionNames))
       }
           
       if(class(k) %in% c("<-", "="))
           k = k[[3]]
 
       if(is.call(k) && !(as.character(k[[1]]) %in% funs)) {
-browser()
           # Have to find which elements of the call contain the actual function of interest
 #        tmp = lapply(k[-1], function(x) getDepend(getInputs(x), fileFunctionNames, funs = funs))
 #         i = getInputs(k[-1])
