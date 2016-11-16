@@ -49,10 +49,9 @@ function(code, fileFunctionNames = FileFunctionNames(), prev = list())
 getDepend =
 function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functions), prev = list(), loadPackages = TRUE)
 {
-   if(loadPackages && length(node@libraries)) {
-       browser()
-        sapply(node@libraries, library, character.only = TRUE)
-   }
+   if(loadPackages && length(node@libraries)) 
+        sapply(node@libraries, function(x) try(library(x, character.only = TRUE)))
+
     
    if(any(fileFunctionNames %in% funs)) {   # length(node@strings) && 
           # what about sep = "\t"
