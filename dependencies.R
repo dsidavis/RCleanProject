@@ -18,20 +18,28 @@ info = lapply(sscripts, as, "ScriptInfo")
 names(info) = scripts
 
 
+# This isn't the one we actually want. We use this to see the names of the
+# functions that are called that might be reading or writing data, or creating plots.
 all.dep = lapply(info, function(x) getDepends(, x))
-
 
 x = table(unlist(lapply(info, function(x) lapply(x, function(x) names(x@functions)))))
 
 
+# Now we know we need to include the following functions for this particular project.
 tmp = lapply(info, function(x) getDepends(, x, FileFunctionNames("stan_rdump", "read_stan_csv", "read_vt", "read_vt_sheet")))
 all.dep = do.call(rbind, tmp)
 all.dep$SourceFilename = rep(names(info), sapply(tmp, nrow))
 rownames(all.dep) = NULL # seq(1, nrow(all.dep))
 
+# There are names on the operation vector that don't help.
 all.dep$operation = unname(all.dep$operation)
 
 
 # Find orphans
+# When all.dep$operation is a simple character vector, we can look for the elements in all.dep that contain values  in
+# read_stan_csv, read_vt, read_vt_sheet, read.csv, read.table,  etc.
+# Then we look at the corresponding filename values and compare these to
+# list.files(dataDirectory)
+# and then use setdiff()  with basename() as needed.
 
 
