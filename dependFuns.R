@@ -32,17 +32,40 @@ function(..., .funs = unlist(list(...)), .exclude = FALSE)
 }
 
 getDepend =
-function(node, fileFunctionNames = FileFunctionNames())
+function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functions))
 {
 
-   if(length(node@strings) && any(fileFunctionNames %in% names(node@functions))) {
+   if(length(node@strings) && any(fileFunctionNames %in% funs)) {
           # what about sep = "\t"
 
+      funs = intersect(fileFunctionNames, names(node@functions))
       k = node@code
-      funs = names(node@functions)
+      if(class(k) == "if") {
+         if(is.logical(k[[2]]) && !k[[2]])  #XXX Allow caller to specify this should be processed.
+            return(NULL)
+
+         return(getDepends(, as(k[[3]], "ScriptInfo"), fileFunctionNames = fileFunctionNames))
+      }
+          
       if(class(k) %in% c("<-", "="))
           k = k[[3]]
+
+      if(is.call(k) && !(as.character(k[[1]]) %in% funs)) {
+browser()
+          # Have to find which elements of the call contain the actual function of interest
+#        tmp = lapply(k[-1], function(x) getDepend(getInputs(x), fileFunctionNames, funs = funs))
+#         i = getInputs(k[-1])
+#         if(length(k) == 2)
+#            i = new("ScriptInfo", list(i))
+         i = new("ScriptInfo", lapply(seq(along = k[-1]), function(i) getInputs(k[[i+1]])))
+         tmp = getDepends(, i, fileFunctionNames)
+         return(tmp)
+# for simple nested calls, e.g. scale(read.csv("foo.csv")), use
+#        k = k[[2]]
+      }
+      
       funName = as.character(k[[1]])
+ if(funName == "if") browser()
       fun = tryCatch(get(funName, mode = "function"), error = function(...) NULL)
       if(!is.null(fun) && typeof(fun) == "closure") {  # avoud "function" objects which are primitives.
           kall =  match.call(fun, k)
