@@ -7,6 +7,8 @@ Description: Understanding code one inherits, or what files, functions and scrip
  understand the code.  This package also helps people become familiar with other people's code.
  This currently works on scripts but is very easily adapted to Sweave, XML, Markdown, knitr, JSS, iPython/Jupyter documents.
  This uses static analysis to understand the dependencies.
+ We can find filenames with absolute paths and then convert these to relative paths.
+ We can identify the names of "plot files" and then ensure these are up-to-date and compute these with minimal computation.
  We plan on extending this to shell scripts, understanding Makefiles, and also programmatically generating Makefiles
  from the dependencies.
 Author: Matt Espe
