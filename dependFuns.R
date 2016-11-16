@@ -44,7 +44,10 @@ function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functi
          if(is.logical(k[[2]]) && !k[[2]])  #XXX Allow caller to specify this should be processed.
             return(NULL)
 
-         return(getDepends(, as(k[[3]], "ScriptInfo"), fileFunctionNames = fileFunctionNames))
+         i = new("ScriptInfo", lapply(k[[3]], function(x) getInputs(x)))
+         tmp = getDepends(, i, fileFunctionNames)         
+         return(tmp)
+#         return(getDepends(, as(k[[3]], "ScriptInfo"), fileFunctionNames = fileFunctionNames))
       }
           
       if(class(k) %in% c("<-", "="))
