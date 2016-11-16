@@ -23,15 +23,6 @@ all.dep = lapply(info, function(x) getDepends(, x))
 
 x = table(unlist(lapply(info, function(x) lapply(x, function(x) names(x@functions)))))
 
-getLibraries =
-function(info)
-{
-    unlist(lapply(info, slot, "libraries"))
-}
-all.libs = table(unlist(lapply(info, getLibraries)))
-
-
-
 
 tmp = lapply(info, function(x) getDepends(, x, FileFunctionNames("stan_rdump", "read_stan_csv", "read_vt", "read_vt_sheet")))
 all.dep = do.call(rbind, tmp)

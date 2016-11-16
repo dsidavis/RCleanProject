@@ -1,0 +1,17 @@
+Package: RCleanProject
+Version: 0.1-0
+Title: Analyze Code in Scripts to Query and Display Code Content, Identify Dependencies, Orphans, ...
+Description: Understanding code one inherits, or what files, functions and scripts are actually used in your
+ own slowly evolving project can be very useful. To create a minimal set of data files, code files, functions, plots, etc.
+ so that others can reproduce your work is necessary for enabling reviewers (journal or code) to efficiently
+ understand the code.  This package also helps people become familiar with other people's code.
+ This currently works on scripts but is very easily adapted to Sweave, XML, Markdown, knitr, JSS, iPython/Jupyter documents.
+ This uses static analysis to understand the dependencies.
+ We plan on extending this to shell scripts, understanding Makefiles, and also programmatically generating Makefiles
+ from the dependencies.
+Author: Matt Espe
+        Duncan Temple Lang
+Maintainer: Duncan Temple Lang <duncan@r-project.org>
+License: BSD_3_Clause + LICENSE
+Imports: CodeDepends
+
