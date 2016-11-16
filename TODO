@@ -1,0 +1,22 @@
+Find orphan files
+
+Deal with variables in calls to read.csv(), etc. i.e. where the name of the file is in a variable.
+
+Looping over a vector of file names and calling ...
+  lapply(files, read.csv)
+  for(f in files)
+     read.csv(f)
+
+Nested calls
+  See
+     getDepends("~/DSIProjects/MattCleanProject/RCleanProject/inst/sampleScripts/eg_nested.R")
+
+  filename operation expressionNum
+1  foo.csv  read.csv             1
+2  bar.csv  read.csv             2
+
+
+Top-level if() statements
+  find constant and exclude if FALSE
+  Allow for constant that could be redefined.
+  Dynamic value.

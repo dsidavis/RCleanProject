@@ -1,6 +1,8 @@
 library(codetools)
 
-rfiles = list.files("Variety_trial_analysis/code", pattern = "\\.R$", full = TRUE)
+dir = "Variety_trial_analysis/code"
+#dir = "."
+rfiles = list.files(dir, pattern = "\\.R$", full = TRUE)
 
 isfunfile = grepl("funs\\.R$", rfiles)
 rfunfiles = rfiles[isfunfile]
@@ -23,10 +25,9 @@ scripts = rfiles[!isfunfile]
 
 library(CodeDepends)
 #sc = lapply(scripts, parse)
-scripts = lapply(scripts, readScript)
-info = lapply(scripts, as, "ScriptInfo")
-names(sc) = scripts
-
+sscripts = lapply(scripts, readScript)
+info = lapply(sscripts, as, "ScriptInfo")
+names(info) = scripts
 
 tt = table(unlist(lapply(info, function(i) unlist(sapply(i, slot, "functions")))))
 setdiff(names(funs), names(tt))
