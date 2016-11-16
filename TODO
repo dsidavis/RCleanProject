@@ -2,6 +2,7 @@ Get rid of lists in the data frames.
   Seem to be all related to stan and packages we haven't loaded.
 
 Find orphan files
+  see rendundant.R and redundantFiles.R
 
 [done] Evaluate library() calls.
   With user control via loadPackages = TRUE/FALSE

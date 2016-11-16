@@ -32,7 +32,7 @@ all.dep$SourceFilename = rep(names(info), sapply(tmp, nrow))
 rownames(all.dep) = NULL # seq(1, nrow(all.dep))
 
 # There are names on the operation vector that don't help.
-all.dep$operation = unname(all.dep$operation)
+#all.dep$operation = unname(all.dep$operation)
 
 
 # Find orphans
@@ -41,5 +41,20 @@ all.dep$operation = unname(all.dep$operation)
 # Then we look at the corresponding filename values and compare these to
 # list.files(dataDirectory)
 # and then use setdiff()  with basename() as needed.
+
+# The RDA files.
+ # Which are explicitly loaded, written by R via our code, and which exist.
+loaded = basename(all.dep[all.dep$operation == "load", "filename"])
+written = basename(all.dep[all.dep$operation == "save", "filename"])
+exist.rda = list.files("Variety_trial_analysis/data", pattern = "\\.[Rr]da$")
+ # The ones that aren't written and alrea
+setdiff(exist.rda, written)
+
+
+exist.Rfiles = list.files("Variety_trial_analysis/code", pattern = "\\.[Rr]$")
+sourced = basename(all.dep[all.dep$operation == "source", "filename"])
+setdiff(exist.Rfiles, sourced)
+
+
 
 
