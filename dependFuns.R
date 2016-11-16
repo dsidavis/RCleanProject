@@ -5,7 +5,7 @@ function(file, info = as(readScript(file), "ScriptInfo"), fileFunctionNames = Fi
 
   i = !sapply(tmp, is.null)
   if(!any(i))
-      return(data.frame(filename = character(), operation = character(), expressionNum = integer()))
+      return(data.frame(filename = character(), operation = character(), expressionNum = integer(), stringsAsFactors = FALSE))
   
   ans = as.data.frame(do.call(rbind, tmp[i]), stringsAsFactors = FALSE)
   ans$expressionNum = which(i)
@@ -20,7 +20,7 @@ DefaultFileFunctions =
 "read.table", "read.fwf", "file", "gzfile", "write.csv"), .Names = c("file", 
 "file", "...", "filename", "file", "file", "file", "file", "description", 
 "description", "..."))
-
+names(DefaultFileFunctions)[match(c("save","write.csv"), DefaultFileFunctions)] = "file"
 
 FileFunctionNames =
 function(..., .funs = unlist(list(...)), .exclude = FALSE)
@@ -42,7 +42,6 @@ function(node, fileFunctionNames = FileFunctionNames())
       funs = names(node@functions)
       if(class(k) %in% c("<-", "="))
           k = k[[3]]
-
       funName = as.character(k[[1]])
       fun = tryCatch(get(funName, mode = "function"), error = function(...) NULL)
       if(!is.null(fun) && typeof(fun) == "closure") {  # avoud "function" objects which are primitives.
