@@ -1,5 +1,6 @@
 plot.Dependencies = 
-function(deps, g = makeGraph(deps), fileTypeColors = c("Rda" = "lightgray", cvs = "pink", "xlsx?$" = "yellow"), ...)
+function(deps, g = makeGraph(deps, operations), operations = c("source", "load", "save"),
+           fileTypeColors = c("Rda" = "lightgray", cvs = "pink", "xlsx?$" = "yellow"), ...)
 {
     for(i in names(fileTypeColors))
         V(g)$color[ grepl(names(fileTypeColors[i]), V(g)$name)] =  fileTypeColors[i]
