@@ -1,18 +1,26 @@
 getDepends =
-function(file, info = as(readScript(file), "ScriptInfo"), fileFunctionNames = FileFunctionNames(), prev = list(), loadPackages = TRUE)
+function(file, info = as(readScript(file), "ScriptInfo"), fileFunctionNames = FileFunctionNames(),
+          prev = info, loadPackages = TRUE, addExpressionNum = TRUE)
 {
 #  tmp = lapply(info, getDepend, fileFunctionNames = fileFunctionNames)
    tmp = vector("list", length(info))
    for(i in seq(along = info))
-       tmp[[i]] = getDepend(info[[i]], fileFunctionNames = fileFunctionNames, prev = info[seq_len(i-1L)], loadPackages = loadPackages)
+       tmp[[i]] = getDepend(info[[i]], fileFunctionNames = fileFunctionNames, prev = if(missing(prev)) info[seq_len(i-1L)] else prev, loadPackages = loadPackages)
 
   i = !sapply(tmp, is.null)
-  if(!any(i))
-      return(data.frame(filename = character(), operation = character(), expressionNum = integer(), stringsAsFactors = FALSE))
-  
+  if(!any(i)) {
+      tmp = data.frame(filename = character(), operation = character(), stringsAsFactors = FALSE)
+      if(addExpressionNum)
+         tmp$expressionNum = integer()
+      return(tmp)
+  }
+
+#if(any(sapply(tmp[i], function(x) is.list(x) && !is.data.frame(x)))) browser()
+   
   ans = as.data.frame(do.call(rbind, tmp[i]), stringsAsFactors = FALSE)
     # We are losing the expression number within the sub-expressions
-  ans$expressionNum = rep(which(i), sapply(tmp[i], function(x) if(is.data.frame(x)) nrow(x) else 1))
+  if(addExpressionNum)
+     ans$expressionNum = rep(which(i), sapply(tmp[i], function(x) if(is.data.frame(x)) nrow(x) else 1))
   ans
 }
 
@@ -42,22 +50,23 @@ getDependsLanguage =
 function(code, fileFunctionNames = FileFunctionNames(), prev = list())
 {
     i = new("ScriptInfo", lapply(code, getInputs))
-    tmp = getDepends(, i, fileFunctionNames, prev = prev)
+    tmp = getDepends(, i, fileFunctionNames, prev = prev, addExpressionNum = FALSE)
     tmp
 }
 
 getDepend =
 function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functions), prev = list(), loadPackages = TRUE)
 {
+      # load any library
    if(loadPackages && length(node@libraries)) 
         sapply(node@libraries, function(x) try(library(x, character.only = TRUE)))
 
     
    if(any(fileFunctionNames %in% funs)) {   # length(node@strings) && 
-          # what about sep = "\t"
-
       funs = intersect(fileFunctionNames, names(node@functions))
       k = node@code
+
+        # Deal with top-level if statements
       if(class(k) == "if") {
          if(is.logical(k[[2]]) && !k[[2]]) {  #XXX Allow caller to specify this should be processed.
             if(length(k) == 4)
@@ -68,10 +77,12 @@ function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functi
 
          return(getDependsLanguage(k[[3]], fileFunctionNames, prev = prev))
       }
-          
+
+        # Assignments, deal with the right hand side
       if(class(k) %in% c("<-", "="))
           k = k[[3]]
 
+        # Nested calls.
       if(is.call(k) && !(as.character(k[[1]]) %in% funs)) {
              # Have to find which elements of the call contain the actual function of interest
           return(getDependsLanguage(k[-1], fileFunctionNames, prev = prev))
@@ -108,7 +119,12 @@ function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functi
            file = as.character(NA)
          
       }
-
+#XXX - we have a variable  but we haven't resolved it.
+      # This occurs e.g. in 
+if(!is.character(file)){
+#     browser()
+     file = as.character(NA)
+ }
       
       c(filename = file, operation = funName)
    }
