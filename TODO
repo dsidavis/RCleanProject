@@ -3,9 +3,11 @@ Get rid of lists in the data frames.
 
 Find orphan files
 
-Evaluate library() calls.
+[done] Evaluate library() calls.
+  With user control via loadPackages = TRUE/FALSE
 
-Deal with variables in calls to read.csv(), etc. i.e. where the name of the file is in a variable.
+[simple case] Deal with variables in calls to read.csv(), etc. i.e. where the name of the file is in a variable.
+    getDepends(system.file("sampleScripts", "eg1.R", package = "RCleanProject")
 
 Looping over a vector of file names and calling ...
   lapply(files, read.csv)

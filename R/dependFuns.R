@@ -1,10 +1,10 @@
 getDepends =
-function(file, info = as(readScript(file), "ScriptInfo"), fileFunctionNames = FileFunctionNames(), prev = list())
+function(file, info = as(readScript(file), "ScriptInfo"), fileFunctionNames = FileFunctionNames(), prev = list(), loadPackages = TRUE)
 {
 #  tmp = lapply(info, getDepend, fileFunctionNames = fileFunctionNames)
    tmp = vector("list", length(info))
    for(i in seq(along = info))
-       tmp[[i]] = getDepend(info[[i]], fileFunctionNames = fileFunctionNames, prev = info[seq_len(i-1L)])
+       tmp[[i]] = getDepend(info[[i]], fileFunctionNames = fileFunctionNames, prev = info[seq_len(i-1L)], loadPackages = loadPackages)
 
   i = !sapply(tmp, is.null)
   if(!any(i))
@@ -17,14 +17,16 @@ function(file, info = as(readScript(file), "ScriptInfo"), fileFunctionNames = Fi
 }
 
 #DefaultFileFunctions = c("source", "load", "save", "png", "pdf", "read.csv", "read.table", "read.fwf", "file", "gzfile", "write.csv")
-
 #dput(structure(DefaultFileFunctions, names = unname(sapply(DefaultFileFunctions, function(x) names(formals(get(x, mode = "function")))[1]))))
 DefaultFileFunctions =
  structure(c("source", "load", "save", "png", "pdf", "read.csv", 
 "read.table", "read.fwf", "file", "gzfile", "write.csv"), .Names = c("file", 
 "file", "...", "filename", "file", "file", "file", "file", "description", 
 "description", "..."))
+
+# Override some of these.
 names(DefaultFileFunctions)[match(c("save","write.csv"), DefaultFileFunctions)] = "file"
+
 
 FileFunctionNames =
 function(..., .funs = unlist(list(...)), .exclude = FALSE)
@@ -45,9 +47,13 @@ function(code, fileFunctionNames = FileFunctionNames(), prev = list())
 }
 
 getDepend =
-function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functions), prev = list())
+function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functions), prev = list(), loadPackages = TRUE)
 {
-browser()
+   if(loadPackages && length(node@libraries)) {
+       browser()
+        sapply(node@libraries, library, character.only = TRUE)
+   }
+    
    if(any(fileFunctionNames %in% funs)) {   # length(node@strings) && 
           # what about sep = "\t"
 
@@ -89,11 +95,16 @@ browser()
 # If the argument is not a string but a call or the name of a variable.      
       if(!is.character(file)) {
          if(is.name(file)) {
-            browser()
-           v = getVariableDepends(as.character(file), lapply(prev, slot, "code"), prev)
-           if(length(v)) {
-               
-           }
+            v = getVariableDepends(as.character(file), lapply(prev, slot, "code"), prev, asIndex = TRUE)
+            if(length(v)) {
+                if(length(v) > 1)
+                    warning("not handled properly yet")
+                dep = prev[[ v[1] ]]
+                if(length(dep@strings) == 1 && length(dep@outputs) == 1)
+                    file = dep@strings
+                else
+                    file = as.character(NA)
+            }
          } else
            file = as.character(NA)
          
