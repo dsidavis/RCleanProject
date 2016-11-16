@@ -1,7 +1,10 @@
 getDepends =
-function(file, info = as(readScript(file), "ScriptInfo"), fileFunctionNames = FileFunctionNames())
+function(file, info = as(readScript(file), "ScriptInfo"), fileFunctionNames = FileFunctionNames(), prev = list())
 {
-  tmp = lapply(info, getDepend, fileFunctionNames = fileFunctionNames)
+#  tmp = lapply(info, getDepend, fileFunctionNames = fileFunctionNames)
+   tmp = vector("list", length(info))
+   for(i in seq(along = info))
+       tmp[[i]] = getDepend(info[[i]], fileFunctionNames = fileFunctionNames, prev = info[seq_len(i-1L)])
 
   i = !sapply(tmp, is.null)
   if(!any(i))
@@ -34,15 +37,15 @@ function(..., .funs = unlist(list(...)), .exclude = FALSE)
 
 
 getDependsLanguage =
-function(code, fileFunctionNames = FileFunctionNames())
+function(code, fileFunctionNames = FileFunctionNames(), prev = list())
 {
     i = new("ScriptInfo", lapply(code, getInputs))
-    tmp = getDepends(, i, fileFunctionNames)         
+    tmp = getDepends(, i, fileFunctionNames, prev = prev)
     tmp
 }
 
 getDepend =
-function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functions))
+function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functions), prev = list())
 {
 
    if(length(node@strings) && any(fileFunctionNames %in% funs)) {
@@ -53,12 +56,12 @@ function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functi
       if(class(k) == "if") {
          if(is.logical(k[[2]]) && !k[[2]]) {  #XXX Allow caller to specify this should be processed.
             if(length(k) == 4)
-                return(getDependsLanguage(k[[4]], fileFunctionNames))
+                return(getDependsLanguage(k[[4]], fileFunctionNames, prev = prev))
                        
             return(NULL)
          }
 
-         return(getDependsLanguage(k[[3]], fileFunctionNames))
+         return(getDependsLanguage(k[[3]], fileFunctionNames, prev = prev))
       }
           
       if(class(k) %in% c("<-", "="))
@@ -70,9 +73,11 @@ function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functi
 #         i = getInputs(k[-1])
 #         if(length(k) == 2)
 #            i = new("ScriptInfo", list(i))
-         i = new("ScriptInfo", lapply(seq(along = k[-1]), function(i) getInputs(k[[i+1]])))
-         tmp = getDepends(, i, fileFunctionNames)
-         return(tmp)
+          
+#         i = new("ScriptInfo", lapply(seq(along = k[-1]), function(i) getInputs(k[[i+1]])))
+#         tmp = getDepends(, i, fileFunctionNames)
+#         return(tmp)
+          return(getDependsLanguage(k[-1], fileFunctionNames, prev = prev))
 # for simple nested calls, e.g. scale(read.csv("foo.csv")), use
 #        k = k[[2]]
       }
