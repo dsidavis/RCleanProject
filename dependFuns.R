@@ -68,22 +68,12 @@ function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functi
           k = k[[3]]
 
       if(is.call(k) && !(as.character(k[[1]]) %in% funs)) {
-          # Have to find which elements of the call contain the actual function of interest
-#        tmp = lapply(k[-1], function(x) getDepend(getInputs(x), fileFunctionNames, funs = funs))
-#         i = getInputs(k[-1])
-#         if(length(k) == 2)
-#            i = new("ScriptInfo", list(i))
-          
-#         i = new("ScriptInfo", lapply(seq(along = k[-1]), function(i) getInputs(k[[i+1]])))
-#         tmp = getDepends(, i, fileFunctionNames)
-#         return(tmp)
+             # Have to find which elements of the call contain the actual function of interest
           return(getDependsLanguage(k[-1], fileFunctionNames, prev = prev))
-# for simple nested calls, e.g. scale(read.csv("foo.csv")), use
-#        k = k[[2]]
       }
       
       funName = as.character(k[[1]])
- if(funName == "if") browser()
+
       fun = tryCatch(get(funName, mode = "function"), error = function(...) NULL)
       if(!is.null(fun) && typeof(fun) == "closure") {  # avoud "function" objects which are primitives.
           kall =  match.call(fun, k)
