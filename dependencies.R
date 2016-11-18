@@ -48,7 +48,8 @@ loaded = basename(all.dep[all.dep$operation == "load", "filename"])
 written = basename(all.dep[all.dep$operation == "save", "filename"])
 exist.rda = list.files("Variety_trial_analysis/data", pattern = "\\.[Rr]da$")
  # The ones that aren't written and alrea
-setdiff(exist.rda, written)
+intersect(written, loaded)
+setdiff(exist.rda, c(written, loaded))
 
 
 exist.Rfiles = list.files("Variety_trial_analysis/code", pattern = "\\.[Rr]$")
