@@ -14,7 +14,7 @@ function(deps, operations = c("source", "load", "save", "read_excel", "read_vt",
     grps = split(deps, deps$SourceFilename)
     tmp = lapply(grps, function(d) {
                 tt = unique(basename(d[d$operation %in% operations, "filename"]))
-                cbind(rep(basename(d$SourceFilename[1]), length(tt)), tt)
+                cbind(tt, rep(basename(d$SourceFilename[1]), length(tt)))
              })
     m = do.call(rbind, tmp)
 
