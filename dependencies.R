@@ -1,3 +1,5 @@
+library(RCleanProject)
+
 # Assumes we have the names of the script files in scripts.
 # See redundant.R
 scripts = c("Variety_trial_analysis/code/calc_weather_var.R", "Variety_trial_analysis/code/cleaning.R", 
@@ -48,6 +50,7 @@ loaded = basename(all.dep[all.dep$operation == "load", "filename"])
 written = basename(all.dep[all.dep$operation == "save", "filename"])
 exist.rda = list.files("Variety_trial_analysis/data", pattern = "\\.[Rr]da$")
  # The ones that aren't written and alrea
+
 intersect(written, loaded)
 setdiff(exist.rda, c(written, loaded))
 

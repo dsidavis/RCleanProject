@@ -9,11 +9,11 @@ library(igraph)
 # Create all.dep from
 # source("dependencies.R")
 
-plot.Dependencies(all.dep)
+RCleanProject:::plot.Dependencies(all.dep)
 
 
 g = makeGraph(all.dep, operations = c("source", "load", "save", "read_excel", "read_vt", "read.csv", "write.csv"))
-plot.Dependencies(, g)
+RCleanProject::plot.Dependencies(, g)
 
 
 

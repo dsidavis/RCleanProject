@@ -1,3 +1,5 @@
 export("getDepends")
 export("FileFunctionNames")
+export(plot.Dependencies)
+export(makeGraph)
 

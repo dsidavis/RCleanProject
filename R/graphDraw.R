@@ -5,7 +5,7 @@ function(deps, g = makeGraph(deps, operations), operations = c("source", "load",
     for(i in names(fileTypeColors))
         V(g)$color[ grepl(names(fileTypeColors[i]), V(g)$name)] =  fileTypeColors[i]
 
-    plot(g, vertex.size = 10, vertex.label.cex = 3, edge.color = "black", ...) # , edge.arrow.width = 0)
+    plot(g, vertex.size = 10, vertex.label.cex = .3, edge.color = "black", ...) # , edge.arrow.width = 0)
 }
 
 makeGraph =
