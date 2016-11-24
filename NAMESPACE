@@ -3,3 +3,6 @@ export("FileFunctionNames")
 export(plot.Dependencies)
 export(makeGraph)
 
+export(genMakefileCode)
+
+
