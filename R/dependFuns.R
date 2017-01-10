@@ -96,7 +96,7 @@ function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functi
           i = match(funName, fileFunctionNames)
           arg = names(fileFunctionNames)[i]
           if(arg == "")
-              arg = 1
+              arg = 2
           file = kall[[arg]]
       } else {
           file = k[[2]]
