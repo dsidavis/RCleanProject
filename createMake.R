@@ -5,7 +5,7 @@ byfile = split(all.dep, all.dep$SourceFilename)
 
 ans = lapply(byfile, mkTarget)
 
-ans =do.call(c, ans)
+ans = do.call(c, ans)
 
 ans = sapply(ans, as, "character")
 

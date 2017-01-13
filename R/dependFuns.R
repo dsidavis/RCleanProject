@@ -95,7 +95,8 @@ function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functi
           kall =  match.call(fun, k)
           i = match(funName, fileFunctionNames)
           arg = names(fileFunctionNames)[i]
-          if(arg == "")
+          if(arg == "")  # no name, so assume first argument (2nd element of call)
+                         # We could add other heuristics but probably do that to put a name on it before we start.
               arg = 2
           file = kall[[arg]]
       } else {
@@ -115,10 +116,14 @@ function(node, fileFunctionNames = FileFunctionNames(), funs = names(node@functi
                 else
                     file = as.character(NA)
             }
+         } else if(is.call(file)) {
+            # get literals at least.
+            tmp = getInputs(file)
+            file = tmp@strings
          } else
            file = as.character(NA)
          
-      }
+     }
 #XXX - we have a variable  but we haven't resolved it.
       # This occurs e.g. in 
 if(!is.character(file)){
