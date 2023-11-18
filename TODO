@@ -1,3 +1,5 @@
+Detect setwd() calls.
+
 Looping over a vector of file names and calling ...
   lapply(files, read.csv)
   for(f in files)

@@ -7,8 +7,10 @@ function(file, info = as(readScript(file), "ScriptInfo"), fileFunctionNames = Fi
    for(i in seq(along = info))
        tmp[[i]] = getDepend(info[[i]], fileFunctionNames = fileFunctionNames, prev = if(missing(prev)) info[seq_len(i-1L)] else prev, loadPackages = loadPackages)
 
+    # i will be TRUE if not NULL
   i = !sapply(tmp, is.null)
-  if(!any(i)) {
+   if(!any(i)) {
+       # So all elements in tmp are NULL.
       tmp = data.frame(filename = character(), operation = character(), stringsAsFactors = FALSE)
       if(addExpressionNum)
          tmp$expressionNum = integer()
