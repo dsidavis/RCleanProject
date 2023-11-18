@@ -2,16 +2,16 @@ library(RCleanProject)
 
 # Assumes we have the names of the script files in scripts.
 # See redundant.R
-scripts = c("Variety_trial_analysis/code/calc_weather_var.R", "Variety_trial_analysis/code/cleaning.R", 
-"Variety_trial_analysis/code/cv_in_field.R", "Variety_trial_analysis/code/getCIMIS.R", 
-"Variety_trial_analysis/code/getPOWER.R", "Variety_trial_analysis/code/prep_stan_data.R", 
-"Variety_trial_analysis/code/prep_temp_data.R", "Variety_trial_analysis/code/prep_temp.R", 
-"Variety_trial_analysis/code/qc_weather.R", "Variety_trial_analysis/code/read_xl_data.R", 
-"Variety_trial_analysis/code/recover_res.R", "Variety_trial_analysis/code/results.R", 
-"Variety_trial_analysis/code/retreive_ucipm.R", "Variety_trial_analysis/code/sim_data.R", 
-"Variety_trial_analysis/code/temp_analysis.R", "Variety_trial_analysis/code/temp_maps.R", 
-"Variety_trial_analysis/code/test_thresh.R", "Variety_trial_analysis/code/vt_combine_data.R", 
-"Variety_trial_analysis/code/vt_EDA.R")
+scripts = c("~/vt_project/code/calc_weather_var.R", "~/vt_project/code/cleaning.R", 
+"~/vt_project/code/cv_in_field.R", "~/vt_project/code/getCIMIS.R", 
+"~/vt_project/code/getPOWER.R", "~/vt_project/code/prep_stan_data.R", 
+"~/vt_project/code/prep_temp_data.R", "~/vt_project/code/prep_temp.R", 
+"~/vt_project/code/qc_weather.R", "~/vt_project/code/read_xl_data.R", 
+"~/vt_project/code/recover_res.R", "~/vt_project/code/results.R", 
+"~/vt_project/code/retreive_ucipm.R", "~/vt_project/code/sim_data.R", 
+"~/vt_project/code/temp_analysis.R", "~/vt_project/code/temp_maps.R", 
+"~/vt_project/code/test_thresh.R", "~/vt_project/code/vt_combine_data.R", 
+"~/vt_project/code/vt_EDA.R")
 
 library(CodeDepends)
 #sc = lapply(scripts, parse)
@@ -48,14 +48,14 @@ rownames(all.dep) = NULL # seq(1, nrow(all.dep))
  # Which are explicitly loaded, written by R via our code, and which exist.
 loaded = basename(all.dep[all.dep$operation == "load", "filename"])
 written = basename(all.dep[all.dep$operation == "save", "filename"])
-exist.rda = list.files("Variety_trial_analysis/data", pattern = "\\.[Rr]da$")
+exist.rda = list.files("~/vt_project/data", pattern = "\\.[Rr]da$")
  # The ones that aren't written and alrea
 
 intersect(written, loaded)
 setdiff(exist.rda, c(written, loaded))
 
 
-exist.Rfiles = list.files("Variety_trial_analysis/code", pattern = "\\.[Rr]$")
+exist.Rfiles = list.files("~/vt_project/code", pattern = "\\.[Rr]$")
 sourced = basename(all.dep[all.dep$operation == "source", "filename"])
 setdiff(exist.Rfiles, sourced)
 
